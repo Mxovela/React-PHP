@@ -1,17 +1,4 @@
 <?php
-// Configuration
-$db_host = 'localhost';
-$db_username = 'root';
-$db_password = '';
-$db_name = 'mydatabase';
-
-// Connect to database
-$conn = new mysqli($db_host, $db_username, $db_password, $db_name);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
 // API endpoints
 $app->post('/users', 'createUser');
@@ -21,23 +8,9 @@ $app->put('/users/:id', 'updateUser');
 $app->delete('/users/:id', 'deleteUser');
 
 // Functions
-function createUser() {
-    $data = json_decode(file_get_contents('php://input'), true);
-    $name = $data['name'];
-    $email = $data['email'];
-    $password = $data['password'];
 
-    $query = "INSERT INTO users (name, email, password) VALUES ('$name', '$email', '$password')";
-    $result = $conn->query($query);
-
-    if ($result) {
-        echo json_encode(array('message' => 'User created successfully'));
-    } else {
-        echo json_encode(array('message' => 'Error creating user'));
-    }
-}
-
-function getUsers() {
+//GET USERS FUNCTION FROIM THE DATABASE
+function getUsers($conn) {
     $query = "SELECT * FROM users";
     $result = $conn->query($query);
 
@@ -49,7 +22,9 @@ function getUsers() {
     echo json_encode($users);
 }
 
-function getUser($id) {
+
+// GET USER FUNCTION EITHER BY SEARCH FUNCTIONALITY
+function getUser($id, $conn) {
     $query = "SELECT * FROM users WHERE id = '$id'";
     $result = $conn->query($query);
 
@@ -57,12 +32,11 @@ function getUser($id) {
     echo json_encode($user);
 }
 
-function updateUser($id) {
+function updateUser($id, $conn) {
     $data = json_decode(file_get_contents('php://input'), true);
     $name = $data['name'];
     $email = $data['email'];
     $password = $data['password'];
-
     $query = "UPDATE users SET name = '$name', email = '$email', password = '$password' WHERE id = '$id'";
     $result = $conn->query($query);
 
@@ -73,7 +47,9 @@ function updateUser($id) {
     }
 }
 
-function deleteUser($id) {
+
+//DELETE USER FROM THE DATABASE FUNCTIONALITY
+function deleteUser($id, $conn) {
     $query = "DELETE FROM users WHERE id = '$id'";
     $result = $conn->query($query);
 
